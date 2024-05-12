@@ -1,168 +1,212 @@
+
+# So far I have learned how to parse files better and recreate a dictionary using data
+# using user inputs to create new files, look up files, Using is functions to find
+# file paths and return a list of files using os.listdir(), os.getcwd()
+# Functions can be invoked without a reference because they are independent
+# Methods require a reference to the class to be used
+# Filter through data based on user input
+# Iterate over objects to get the exact data that I need
+########################
+# I want to add ...
+# User add bills to existing file 
+# make changes to file that is open
+#navigate through "app" based on whether a file is open or not 
+#Main menu for opening file, creating a file, deleting a file, logging out
+# When openening file you can add bill, delete bill, close file
+# Need to be able to remove a bill after its opened
+#Make calculations based on the file that is open using the show
+#Changes made
+# Added a number selection system to input number instead of text to reduce error
+# When a user selects open file they can confirm that they want to open and are
+# shown a list of bills in that file
+
 import time
+import os
 
-#Version 1.0
-#Main features - Create account system, log-in verify credentials, create bill list
-#total the amount of bills based on input, logout functionality, menu selection
-
-#Create Plan for the budget app
-#If the date of bill is before pay date then list upcoming charges
-# Week 1  total bills net total for the month and that would
-# projected savings
-
-# list_of_bills.append(
-#   {"bill_name": "Gas", "date": "08-01-2022", "amount": 20})
-
-# Set this up by parsing a file
-# Each file would be it's own month
-
-
-#--------------------------------------------------------------#
-def input_additional_bill():
-  while True : 
-    Reply = input("Would you like to enter another bill (y/n). ").lower()
-    if Reply == "n" or Reply == "no":
-      print("You replied with ", Reply)
-      time.sleep(1)
-      print("You have successfully created your list of bills.")
-      time.sleep(1)
-      return False
-    elif Reply == "y" or Reply == "yes":
-      print("You replied with ", Reply)
-      return True
-    else:
-      print("Invalid input entered.")
-
-#--------------------------------------------------------------#
-def add_to_list(bill,list_of_bills):
-  list_of_bills.append(bill)
-  print()
-  print("Bills:")
-  for bill in list_of_bills:
-    print()
-    print(type(bill["amount"]))
-
-  print()
-  return (list_of_bills)
-#--------------------------------------------------------------#
-def create_bill(name,date,amount):
-  name = input("Enter Bill Name").lower()
-  date = str(input("Enter date ex. mm-dd-yyyy"))
-  # Add try to catch this error just in case a string is inputted
-  amount = int(input("Enter the amount"))
+# file = open("Texttfile.txt","w")
+# bills = ["hello","There","my","love"]
+# for word in bills:
   
-  return {"name":name,"date":date,"amount":amount}
-  
-#--------------------------------------------------------------#
-# Budget creator
-def create_budget(list_of_bills):
-  #Generator Is Active
-  Continue_generator =  True
-  #Bill Variables
-  name = ''
-  date = ''
-  amount = 0
-  
-  while Continue_generator:
-    bill = create_bill(name,date,amount)
-    list_of_bills = add_to_list(bill,list_of_bills)
-    Continue_generator = input_additional_bill()
-    # print(generate_bill)
+#   file.write(f"{word}\n")
+# file.close()
+
+# file = open("Texttfile.txt","r")
+# for line in file:
+#   print(line.strip())
+
+
+
+
+
+# Testing how the find method is used
+
+# file = "string.txt"
+
+# x = file.find("s")
+# print(file[x])
+#------------------------------------
+
+
+#------------------------------------------------------------
+def file_select(file_dict):
+  while True:
+    file_found = False
+    # User inputs the number to the corresponding text file
+    print("Select which file you would like to open.")
+    Reply = str(input("Enter the file number.\n").lower())
+    # Find the text file using their input
+    for file in file_dict:
+      
+      if(file["num"] == Reply):
+        file_found = True
+        print("You are trying to open " ,file["name"])
+        Reply = input("Confirm (y/n)").lower()
+        if Reply == "yes" or Reply == "y":
+          return file["name"]
+        elif Reply != "no" and Reply != "n":
+          print("Input not recognized.")
+          continue
+      
+    if not file_found:
+      print("File was not found")
+
+    if not Reply.isdigit():
+      print("Please input a number.")
+
+#-----------------------------------------------------------
+def create_list_of_bills(list_of_bills,file,FileName):
+  good_format = False
+  for line in file:
+    # Splits line into a list
+    data = line.strip().split(",")
+    # Can change based on the main format of the file, currently three keys in dict
+    if(len(data) == 3):
+      print("You are working in ", FileName)
+      good_format = True
+      list_of_bills.append({'name':data[0],'date':data[1],'amount':data[2]})
+  # Take this out because its never going to happen
+  if not good_format: 
+      print("Invalid data format.")
+      # open_file_menu()
   return list_of_bills
-
+#----------------------------------------------#
+def open_file_menu():
+  list_of_bills = []
+  curr_file_list = []
+  file_dict = []
+  file_dir_list = os.listdir()
   
+  #pick a file to open
+  print("Filename list:")
   
-#--------------------------------------------------------------#
-#Sum all of the bills
-def total_bills(list_of_bills):
-  total_bills = 0
-  for bill in list_of_bills:
-    total_bills += bill["amount"]
-  print(total_bills)
+  #------------------------------------
+  # These functions need to be put into separate helper functions
+  # Add txt files to curr_file_list
+  for file in file_dir_list:
+    if file.find(".txt") != -1:
+      curr_file_list.append(file)
 
-#--------------------------------------------------------------#
-# Easy Breaking Point
-# Important Spot
-def Select_menu_option(list_of_bills):
+  # List each file num and create a object based on name and num keys
+  for i,file in enumerate(curr_file_list):
+    file_dict.append({"name":file,"num":str(i+1)})
+
+  # Print the files assigned number and name
+  for file in (file_dict):
+    print(file["num"] + "-" + file["name"])
+  #---------------------------------------------------
+
+  time.sleep(1)
+  
+  #------------------------------------------------------------
+  # This return the file the user selected
+  FileName = file_select(file_dict)
+  #-------------------------------------------------------------
+  
+  try:
+    file = open(FileName,"r")
+    
+    list_of_bills = create_list_of_bills(list_of_bills,file,FileName)
+    #-------------------------------------------------------------------
+    if list_of_bills != []:
+      print("Bills:")
+    # Print each bill from list_of_bills
+    for line in list_of_bills:
+      print(line)
+      
+  except FileNotFoundError:
+    # Not neccessary because file name is based on files that exist vs user input file
+    print("That file does not exist")
+    time.sleep(1)
+    open_file_menu()
+  
+    
+
+#--------------------------------------------------------------------#
+# This is going to be a new menu that allows you to create a new file
+# def create_file():
+#   #Need to figure out how to iterate over the file names to list them
+#   File_name = input("Enter new file name:")
+#   #maybe check to see if the the file ends with txt
+#   file = open(File_name,'x')
+# create_file()
+#--------------------------------------------------------------------#
+  # Select_From_Commands()
+def show_menus():
+  print("Select from an option below.")
+  time.sleep(1)
   print()
-  print("Here are some hotkeys for you.")
-  time.sleep(2)
-  print()
-  print("- Total Bills/TB")
+  print("- Open Budget")
   time.sleep(1)
   print("- Logout")
   time.sleep(1)
-  print()
+
+  while True:
+    Reply = input("Select an option from above.\n").lower()
+    if Reply == "open budget" or Reply == "openbudget":
+      open_file_menu()
+    elif Reply == "logout":
+      quit()
+    else:
+      #***********************************************#
+      # Need to add a way to delete the previous lines
+      #***********************************************#
+      print("Invalid command used.")
   
-  Reply = input("What would you like to do next.").lower()
-  print(Reply)
-  if Reply == "total bills" or Reply == "tb":
-    total_bills(list_of_bills)
-  elif Reply == "logout":
-    print("Closing program in")
-    for x in range(3,0,-1):
-      print(x)
-      time.sleep(1)
-    quit()
-  else:
-    print("Invalid input entered:", Reply)
-  return True
-
-#--------------------------------------------------------------#
-
-# This is the main function
-def show_menus():
-  bill_list_generated = ""
-  # Total_income = input("Input your total income for the month")
-  print()
-  #Bill List
-  list_of_bills = []
-  print("Enter all of your upcoming bills.")
-  print()
-  list_of_bills = create_budget(list_of_bills)
-  
-  if len(list_of_bills) >= 1:
-    bill_list_generated =  True
-    
-  if bill_list_generated:
-    menu_active = True
-    while menu_active:
-      menu_active = Select_menu_option(list_of_bills)
-
-#--------------------------------------------------------------#
+show_menus()
 
 # This function verifies the user
-def Verify_User():
-  attempts = 3
-  print("Welcome to Budget Buddy!")
-  time.sleep(2)
-  print("Create an account to access the tool.")
-  time.sleep(1)
-  #add a conditional to make sure the Username is the proper length
-  Username = input("Create a username.\n")
-  #add a conditional to make sure the Password is the proper length
-  Password = input("Create a password.\n")
-  print()
-  while attempts > 0: 
-    time.sleep(1)
-    print("Enter your login information")
-    print()
-    time.sleep(1)
-    UserField = input("Enter Username\n")
-    PasswordField = input("Enter Password\n")
+# def Verify_User():
+#   attempts = 3
+#   print("Welcome to Budget Buddy!")
+#   time.sleep(2)
+#   print("Create an account to access the tool.")
+#   time.sleep(1)
+#   #add a conditional to make sure the Username is the proper length
+#   Username = input("Create a username.\n")
+#   #add a conditional to make sure the Password is the proper length
+#   Password = input("Create a password.\n")
+#   print()
+#   while attempts > 0: 
+#     time.sleep(1)
+#     print("Enter your login information")
+#     print()
+#     time.sleep(1)
+#     UserField = input("Enter Username\n")
+#     PasswordField = input("Enter Password\n")
 
-    time.sleep(1)
-    
-    if UserField == Username and PasswordField == Password:
-      print("Welcome back ", Username)
-      show_menus()
-    elif attempts > 1: 
-      print()
-      print("Incorrect Username and Password Combination. \nTry again.\n")
-      attempts -= 1
-      print("You have", attempts, "attempts left.\n")
-    else: 
-      print("You have been locked out")
-      attempts -= 1
+#     time.sleep(1)
+
+#     if UserField == Username and PasswordField == Password:
+#       print("Welcome back ", Username)
+#       show_menus()
+#     elif attempts > 1: 
+#       print()
+#       print("Incorrect Username and Password Combination. \nTry again.\n")
+#       attempts -= 1
+#       print("You have", attempts, "attempts left.\n")
+#     else: 
+#       print("You have been locked out")
+#       attempts -= 1
 
 
-Verify_User()
+# Verify_User()

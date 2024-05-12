@@ -1,0 +1,1 @@
+electricty,10,400
