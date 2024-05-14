@@ -89,6 +89,32 @@ def create_list_of_bills(list_of_bills,file,FileName):
       print("Invalid data format.")
       # open_file_menu()
   return list_of_bills
+
+#----------------------------------------------#
+# These functions will control what is done to the open file
+
+def add_bill(FileName):
+  
+  is_active = True
+  while is_active:
+    file = open(FileName, "a")
+    Name_of_Bill = input("Enter the name of Bill")
+    Date_of_Bill = str(input("Enter the date of Bill"))
+    # Check to see if this has to be a number when written to the file
+    Amount_of_Bill = input("Enter the amount of Bill")
+
+    file.write(f"{Name_of_Bill},{Date_of_Bill},{Amount_of_Bill}\n")
+    file.close()
+    print("Would you like to add another bill?")
+    Reply = input("Confirm (y/n)").lower()
+    if Reply == "yes" or Reply == "y":
+      continue
+    elif Reply == "no" or Reply == "n":
+      is_active = False
+      
+  
+
+  
 #----------------------------------------------#
 def open_file_menu():
   list_of_bills = []
@@ -123,15 +149,29 @@ def open_file_menu():
   #-------------------------------------------------------------
   
   try:
+    #This needs to be put in a helper function 
     file = open(FileName,"r")
     
     list_of_bills = create_list_of_bills(list_of_bills,file,FileName)
+    file.close()
     #-------------------------------------------------------------------
     if list_of_bills != []:
       print("Bills:")
-    # Print each bill from list_of_bills
+
     for line in list_of_bills:
       print(line)
+    #-----------------------------------------#
+    # Menu when the file is open
+    print("Select an option from below.")
+    print("- Add Bill")
+    Reply = input("What would you like to do?").lower()
+    if Reply == "add bill":
+      add_bill(FileName)
+    else:
+      print("incorrect command input.")
+    # Print each bill from list_of_bills
+
+    print("Will that be the end of today's session?")
       
   except FileNotFoundError:
     # Not neccessary because file name is based on files that exist vs user input file
@@ -139,7 +179,7 @@ def open_file_menu():
     time.sleep(1)
     open_file_menu()
   
-    
+open_file_menu()
 
 #--------------------------------------------------------------------#
 # This is going to be a new menu that allows you to create a new file
@@ -151,28 +191,28 @@ def open_file_menu():
 # create_file()
 #--------------------------------------------------------------------#
   # Select_From_Commands()
-def show_menus():
-  print("Select from an option below.")
-  time.sleep(1)
-  print()
-  print("- Open Budget")
-  time.sleep(1)
-  print("- Logout")
-  time.sleep(1)
+# def show_menus():
+#   print("Select from an option below.")
+#   time.sleep(1)
+#   print()
+#   print("- Open Budget")
+#   time.sleep(1)
+#   print("- Logout")
+#   time.sleep(1)
 
-  while True:
-    Reply = input("Select an option from above.\n").lower()
-    if Reply == "open budget" or Reply == "openbudget":
-      open_file_menu()
-    elif Reply == "logout":
-      quit()
-    else:
-      #***********************************************#
-      # Need to add a way to delete the previous lines
-      #***********************************************#
-      print("Invalid command used.")
+#   while True:
+#     Reply = input("Select an option from above.\n").lower()
+#     if Reply == "open budget" or Reply == "openbudget":
+#       open_file_menu()
+#     elif Reply == "logout":
+#       quit()
+#     else:
+#       #***********************************************#
+#       # Need to add a way to delete the previous lines
+#       #***********************************************#
+#       print("Invalid command used.")
   
-show_menus()
+# show_menus()
 
 # This function verifies the user
 # def Verify_User():
