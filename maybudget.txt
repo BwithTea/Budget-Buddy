@@ -1,3 +1,0 @@
-
-gas,s,s
-there,f,f
